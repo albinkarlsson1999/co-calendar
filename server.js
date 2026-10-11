@@ -795,7 +795,7 @@ app.get("/api/lists/:listId/elements", async (req, res) => {
             is_checked: Boolean(row.is_checked)
         }));
 
-        res.status(200).json({elements});
+        res.status(200).json({ elements });
     } catch (e) {
         console.error(e);
         res.status(500).json({ error: "Failed to read list elements from database" });
@@ -1079,7 +1079,7 @@ app.get("/api/accepted-shared/task", async (req, res) => {
         return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
 
-    try{
+    try {
 
         const result = await pool.query(
             `SELECT uID, fName, lName 
@@ -1091,7 +1091,7 @@ app.get("/api/accepted-shared/task", async (req, res) => {
         );
 
         res.status(200).json(result);
-    }catch (e){
+    } catch (e) {
         res.status(500).json({ error: "Failed to get shared tasks from database" });
     }
 });
@@ -1107,7 +1107,7 @@ app.get("/api/accepted-shared/list", async (req, res) => {
         return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
 
-    try{
+    try {
 
         const result = await pool.query(
             `SELECT uID, fName, lName 
@@ -1119,8 +1119,45 @@ app.get("/api/accepted-shared/list", async (req, res) => {
         );
 
         res.status(200).json(result);
-    }catch (e){
+    } catch (e) {
         res.status(500).json({ error: "Failed to get shared lists from database" });
+    }
+});
+
+// ***********************
+// GET ACCEPTED LIST SHARES
+// ***********************
+
+app.delete("/api/share/:type/delete/:sharerId", async (req, res) => {
+    const loggedInUserId = req.signedCookies["user-id"];
+
+    const { type, sharerId } = req.params;
+
+    if (!loggedInUserId) {
+        return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    let tableName = null;
+    if (type === "list") {
+        tableName = "UserSharesList";
+    } else if (type === "task") {
+        tableName = "UserSharesTask";
+    } else {
+        res.status(400).json({ error: "Invalid share type" });
+    }
+
+    try {
+
+        const result = await pool.query(
+            `DELETE FROM ${tableName}
+            WHERE sharer_uID = ? AND shared_with_uID = ?`,
+            [sharerId, loggedInUserId]
+        );
+
+        res.status(200).json({ message: "Deletion successful" });
+
+    } catch (e) {
+        res.status(500).json({ error: "Failed to delete from database" });
     }
 });
 

@@ -291,6 +291,12 @@ async function handleShareArray(type){
     const arraySection = document.createElement("section");
     arraySection.classList.add("list-section");
 
+    const title = document.createElement("h4");
+    title.classList.add("list-section-title");
+    title.textContent = `active ${type} shares:`
+    
+    arraySection.append(title);
+
     const acceptedShareArray = await getAcceptedShares(type);
 
     for(share of acceptedShareArray){
@@ -301,8 +307,10 @@ async function handleShareArray(type){
         const removeButton = document.createElement("button");
         removeButton.classList.add("remove-share-button");
         removeButton.textContent = "remove";
-        removeButton.addEventListener("click", () => {
-            console.log(`remove ${type} share with uID: ${share.uID}`);
+        removeButton.addEventListener("click", async () => {
+            if(await removeActiveShare(type, share.uID)){
+                container.remove();
+            }
         });
         
         const container = document.createElement("div");
@@ -419,4 +427,24 @@ async function getAcceptedShares(type) {
     } catch (e) {
         console.error(`Error loading accepted ${type} shares`, e);
     }
+}
+
+async function removeActiveShare(type, sharerId) {
+    try{
+        const response = await fetch(`/api/share/${type}/delete/${sharerId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        
+        if(response.ok){
+            const data = await response.json();
+            console.log(data.message);
+            return true;
+        }
+    }catch(e){
+        console.error("Failed to delete", e);
+    }
+    return false;
 }
