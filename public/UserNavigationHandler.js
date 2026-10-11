@@ -22,6 +22,8 @@ class UserNavigationHandler {
     setUpShare() {
         const shareWindow = document.getElementById("share-window");
         const shareButton = document.getElementById("share-button");
+        const inputField = document.getElementById("share-email");
+        const submitButton = document.getElementById("submit-share");
 
         shareButton.addEventListener("click", () => {
             shareWindow.style.display = "flex";
@@ -39,18 +41,29 @@ class UserNavigationHandler {
             }
         });
 
-        document.getElementById("submit-share").addEventListener("click", () => {
-            const email = document.getElementById("share-email").value.trim();
-            const sendTasks = document.getElementById("share-tasks-checkbox").checked;
-            const sendLists = document.getElementById("share-lists-checkbox").checked;
-
-            if (email) {
-                this.shareElements(email, sendTasks, sendLists);
-
-                shareWindow.style.display = "none";
-                document.getElementById("share-email").value = "";
+        inputField.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                this.#submit(shareWindow);
             }
         });
+
+        submitButton.addEventListener("click", () => {
+            this.#submit(shareWindow);
+        });
+        
+    }
+
+    #submit(shareWindow) {
+        const email = document.getElementById("share-email").value.trim();
+        const sendTasks = document.getElementById("share-tasks-checkbox").checked;
+        const sendLists = document.getElementById("share-lists-checkbox").checked;
+
+        if (email) {
+            this.shareElements(email, sendTasks, sendLists);
+
+            shareWindow.style.display = "none";
+            document.getElementById("share-email").value = "";
+        }
     }
 
     async shareElements(email, willShareTasks, willShareLists) {
