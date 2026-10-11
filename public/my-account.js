@@ -74,7 +74,7 @@ function showPopUpWindow(title, description, action) {
             handleShareRequestsPopUp();
             break;
         case "show-active-shares":
-            handleShowAcriveSharesPopUp();
+            handleShowActiveSharesPopUp();
         default:
             break;
     }
@@ -179,7 +179,7 @@ async function handleShareRequestsPopUp() {
 
         const declineButton = listItem.querySelector(".decline-button");
         declineButton.addEventListener("click", async () => {
-            if (await removeShare(share.type, share.sharerId)) {
+            if (await removeShare(share.type, share.sharerId, false)) {
                 listItem.remove();
             }
         });
@@ -187,18 +187,22 @@ async function handleShareRequestsPopUp() {
     });
 }
 
-async function handleShowAcriveSharesPopUp() {
+async function handleShowActiveSharesPopUp() {
     clearInputContainers();
     const cancelButton = standardCancelButton();
     popUpWindowButtonContainer.append(cancelButton);
 
     const activeTasks = await handleShareArray("task")
-
-    popUpWindowInputContainer.append(activeTasks);
-
     const activeLists = await handleShareArray("list")
-
+    
+    popUpWindowInputContainer.append(activeTasks);
     popUpWindowInputContainer.append(activeLists);
+
+    const mySharedTasks = await handleShareArray("task", true);
+    const mySharedLists = await handleShareArray("list", true);
+
+    popUpWindowInputContainer.append(mySharedTasks);
+    popUpWindowInputContainer.append(mySharedLists);
 
 }
 
@@ -284,19 +288,20 @@ function clearInputContainers() {
     popUpWindowButtonContainer.innerHTML = "";
 }
 
-async function handleShareArray(type) {
+async function handleShareArray(type, isOwn = false) {
     const arraySection = document.createElement("section");
     arraySection.classList.add("list-section");
 
     const title = document.createElement("h4");
     title.classList.add("list-section-title");
-    title.textContent = `active ${type} shares:`
+    title.textContent = (isOwn) ? `Your active ${type} shares:` : `Active ${type} shares:`
 
     arraySection.append(title);
 
-    const acceptedShareArray = await getAcceptedShares(type);
+    const acceptedShareArray = (isOwn) ? await getMySharedShares(type) : await getAcceptedShares(type);
+    console.log(acceptedShareArray);
 
-    for (share of acceptedShareArray) {
+    for (const share of acceptedShareArray) {
         const nameElement = document.createElement("p");
         nameElement.classList.add("active-share-name");
         nameElement.textContent = `${share.fName} ${share.lName}`;
@@ -305,7 +310,7 @@ async function handleShareArray(type) {
         removeButton.classList.add("remove-share-button");
         removeButton.textContent = "remove";
         removeButton.addEventListener("click", async () => {
-            if (await removeShare(type, share.uID)) {
+            if (await removeShare(type, share.uID, isOwn)) {
                 container.remove();
             }
         });
@@ -426,9 +431,34 @@ async function getAcceptedShares(type) {
     }
 }
 
-async function removeShare(type, sharerId) {
+async function getMySharedShares(type) {
     try {
-        const response = await fetch(`/api/share/${type}/delete/${sharerId}`, {
+        const response = await fetch(`/api/my-shared/${type}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (e) {
+        console.error(`Error loading your shared ${type} items`, e);
+    }
+}
+
+async function removeShare(type, sharerId, isOwn) {
+    let path;
+    if (isOwn) {
+        path = `/api/share/${type}/revoke/${sharerId}`;
+    } else {
+        path = `/api/share/${type}/delete/${sharerId}`;
+    }
+
+    try {
+        const response = await fetch(path, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json"

@@ -1069,14 +1069,25 @@ app.put("/api/lists/elements/:elementId", async (req, res) => {
 
 
 // ***********************
-// GET ACCEPTED TASK SHARES
+// GET ACCEPTED SHARES
 // ***********************
 
-app.get("/api/accepted-shared/task", async (req, res) => {
+app.get("/api/accepted-shared/:type", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
     if (!loggedInUserId) {
         return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    const { type } = req.params;
+
+    let tableName = null;
+    if (type === "list") {
+        tableName = "UserSharesList";
+    } else if (type === "task") {
+        tableName = "UserSharesTask";
+    } else {
+        res.status(400).json({ error: "Invalid share type" });
     }
 
     try {
@@ -1084,9 +1095,9 @@ app.get("/api/accepted-shared/task", async (req, res) => {
         const result = await pool.query(
             `SELECT uID, fName, lName 
             FROM User
-            JOIN UserSharesTask ust ON User.uID = ust.sharer_uID
-            WHERE ust.shared_with_uID = ?
-            AND ust.is_accepted = TRUE;`,
+            JOIN ${tableName} tn ON User.uID = tn.sharer_uID
+            WHERE tn.shared_with_uID = ?
+            AND tn.is_accepted = TRUE;`,
             [loggedInUserId]
         );
 
@@ -1096,31 +1107,42 @@ app.get("/api/accepted-shared/task", async (req, res) => {
     }
 });
 
+
 // ***********************
-// GET ACCEPTED LIST SHARES
+// GET YOUR OWN SHARES
 // ***********************
 
-app.get("/api/accepted-shared/list", async (req, res) => {
+app.get("/api/my-shared/:type", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
     if (!loggedInUserId) {
         return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
 
-    try {
+    const { type } = req.params;
 
+    let tableName = null;
+    if (type === "list") {
+        tableName = "UserSharesList";
+    } else if (type === "task") {
+        tableName = "UserSharesTask";
+    } else {
+        return res.status(400).json({ error: "Invalid share type" });
+    }
+
+    try {
         const result = await pool.query(
-            `SELECT uID, fName, lName 
-            FROM User
-            JOIN UserSharesList ust ON User.uID = ust.sharer_uID
-            WHERE ust.shared_with_uID = ?
-            AND ust.is_accepted = TRUE;`,
+            `SELECT User.uID, User.fName, User.lName 
+             FROM User
+             JOIN ${tableName} tn ON User.uID = tn.shared_with_uID
+             WHERE tn.sharer_uID = ?`,
             [loggedInUserId]
         );
 
-        res.status(200).json(result);
+        return res.status(200).json(result);
     } catch (e) {
-        res.status(500).json({ error: "Failed to get shared lists from database" });
+        console.error("Database error:", e);
+        return res.status(500).json({ error: "Failed to get your shared items from database" });
     }
 });
 
