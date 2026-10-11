@@ -2,6 +2,7 @@ const changeNameButton = document.getElementById("change-name-button");
 const changePasswordButton = document.getElementById("change-password-button");
 const backButton = document.getElementById("back-button");
 const shareRequestButton = document.getElementById("share-requests-button");
+const showActiveSharesButton = document.getElementById("show-active-shares");
 const deleteButton = document.getElementById("delete-button");
 deleteButton.classList.add("delete");
 
@@ -72,6 +73,8 @@ function showPopUpWindow(title, description, action) {
         case "share-requests":
             handleShareRequestsPopUp();
             break;
+        case "show-active-shares":
+            handleShowAcriveSharesPopUp();
         default:
             break;
     }
@@ -183,6 +186,21 @@ async function handleShareRequestsPopUp() {
     });
 }
 
+async function handleShowAcriveSharesPopUp(){
+    clearInputContainers();
+    const cancelButton = standardCancelButton();
+    popUpWindowButtonContainer.append(cancelButton);
+
+    const activeTasks = await handleShareArray("task")
+
+    popUpWindowInputContainer.append(activeTasks);
+
+    const activeLists = await handleShareArray("list")
+
+    popUpWindowInputContainer.append(activeLists);
+    
+}
+
 // ******************
 // BUTTON EVENT LISTENERS
 // ******************
@@ -207,6 +225,12 @@ shareRequestButton.addEventListener("click", async () => {
     showPopUpWindow("Share Requests", "Here are your share requests:", "share-requests");
 
 });
+
+//show active shares
+showActiveSharesButton.addEventListener("click", async () =>{
+    showPopUpWindow("Ative Shares", "These are your active shares:", "show-active-shares");
+})
+
 
 async function acceptShareRequest(sharerId, type) {
     const endPoint = type === "list" ? "/api/lists/share/accept" : "/api/tasks/share/accept";
@@ -261,6 +285,34 @@ function standardSubmitButton() {
 function clearInputContainers() {
     popUpWindowInputContainer.innerHTML = "";
     popUpWindowButtonContainer.innerHTML = "";
+}
+
+async function handleShareArray(type){
+    const arraySection = document.createElement("section");
+    arraySection.classList.add("list-section");
+
+    const acceptedShareArray = await getAcceptedShares(type);
+
+    for(share of acceptedShareArray){
+        const nameElement = document.createElement("p");
+        nameElement.classList.add("active-share-name");
+        nameElement.textContent = `${share.fName} ${share.lName}`;
+        
+        const removeButton = document.createElement("button");
+        removeButton.classList.add("remove-share-button");
+        removeButton.textContent = "remove";
+        removeButton.addEventListener("click", () => {
+            console.log(`remove ${type} share with uID: ${share.uID}`);
+        });
+        
+        const container = document.createElement("div");
+        container.classList.add("active-share-container")
+        container.append(nameElement);
+        container.append(removeButton);
+        
+        arraySection.append(container);
+    }
+    return arraySection;
 }
 
 // ******************
@@ -348,5 +400,23 @@ async function loadShareRequests() {
 
     } catch (error) {
         console.error("Error loading share requests:", error);
+    }
+}
+
+async function getAcceptedShares(type) {
+    try {
+        const response = await fetch(`/api/accepted-shared/${type}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (e) {
+        console.error(`Error loading accepted ${type} shares`, e);
     }
 }
