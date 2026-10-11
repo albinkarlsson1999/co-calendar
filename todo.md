@@ -7,8 +7,8 @@
 ## Funktioner som saknas
 - [SOLVED] Byta namn på listor (`updateListInBackend` är tom)
 - [PARTIALLY SOLVED] Saker i listorna: visa, lägga till, bocka av, ta bort (servern har redan routes)
-- [ ] Neka delningsförfrågningar (decline) (declineShareRequest är inte byggd i my-account.js)
-- [ ] Sluta dela med någon som redan accepterat
+- [SOLVED] Neka delningsförfrågningar (decline) (declineShareRequest är inte byggd i my-account.js)
+- [SOLVED] Sluta dela med någon som redan accepterat
 - [SOLVED] Dölj delete-knappen på listor som andra delat med dig (servern behöver skicka `is_owner` för listor)
 
 ## UX
