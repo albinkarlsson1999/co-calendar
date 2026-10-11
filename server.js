@@ -1071,7 +1071,6 @@ app.put("/api/lists/elements/:elementId", async (req, res) => {
 // ***********************
 // GET ACCEPTED SHARES
 // ***********************
-
 app.get("/api/accepted-shared/:type", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
@@ -1108,10 +1107,10 @@ app.get("/api/accepted-shared/:type", async (req, res) => {
 });
 
 
+
 // ***********************
 // GET YOUR OWN SHARES
 // ***********************
-
 app.get("/api/my-shared/:type", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
@@ -1146,10 +1145,11 @@ app.get("/api/my-shared/:type", async (req, res) => {
     }
 });
 
-// ***********************
-// DELETE SHARES
-// ***********************
 
+
+// ***********************
+// DELETE SHARES FROM OTHERS
+// ***********************
 app.delete("/api/share/:type/delete/:sharerId", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
@@ -1165,7 +1165,7 @@ app.delete("/api/share/:type/delete/:sharerId", async (req, res) => {
     } else if (type === "task") {
         tableName = "UserSharesTask";
     } else {
-        res.status(400).json({ error: "Invalid share type" });
+        return res.status(400).json({ error: "Invalid share type" });
     }
 
     try {
@@ -1176,10 +1176,47 @@ app.delete("/api/share/:type/delete/:sharerId", async (req, res) => {
             [sharerId, loggedInUserId]
         );
 
-        res.status(200).json({ message: "Deletion successful" });
+        return res.status(200).json({ message: "Deletion successful" });
 
     } catch (e) {
-        res.status(500).json({ error: "Failed to delete from database" });
+        return res.status(500).json({ error: "Failed to delete from database" });
+    }
+});
+
+
+// ***********************
+// DELETE SHARES MADE BY SELF
+// ***********************
+app.delete("/api/share/:type/revoke/:recipientId", async (req, res) => {
+const loggedInUserId = req.signedCookies["user-id"];
+
+    const { type, recipientId } = req.params;
+
+    if (!loggedInUserId) {
+        return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    let tableName = null;
+    if (type === "list") {
+        tableName = "UserSharesList";
+    } else if (type === "task") {
+        tableName = "UserSharesTask";
+    } else {
+        return res.status(400).json({ error: "Invalid share type" });
+    }
+
+    try {
+
+        const result = await pool.query(
+            `DELETE FROM ${tableName}
+            WHERE sharer_uID = ? AND shared_with_uID = ?`,
+            [loggedInUserId, recipientId]
+        );
+
+        return res.status(200).json({ message: "Deletion successful" });
+
+    } catch (e) {
+        return res.status(500).json({ error: "Failed to delete from database" });
     }
 });
 
