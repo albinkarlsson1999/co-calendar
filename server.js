@@ -1125,7 +1125,7 @@ app.get("/api/accepted-shared/list", async (req, res) => {
 });
 
 // ***********************
-// GET ACCEPTED LIST SHARES
+// DELETE SHARES
 // ***********************
 
 app.delete("/api/share/:type/delete/:sharerId", async (req, res) => {
