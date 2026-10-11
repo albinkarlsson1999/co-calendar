@@ -1027,7 +1027,7 @@ app.delete("/api/lists/elements/:elementId", async (req, res) => {
 
 
 // ***********************
-// UPDATE ELEMENT IN LIST
+// UPDATE TITLE FOR ELEMENT IN LIST
 // ***********************
 app.put("/api/lists/elements/:elementId", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
@@ -1068,6 +1068,9 @@ app.put("/api/lists/elements/:elementId", async (req, res) => {
 
 
 
+// ***********************
+// UPDATE IS_CHECKED FOR ELEMENT IN LIST
+// ***********************
 app.put("/api/lists/elements/:elementId/:isChecked", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
