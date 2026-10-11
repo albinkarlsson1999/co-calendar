@@ -1068,8 +1068,61 @@ app.put("/api/lists/elements/:elementId", async (req, res) => {
 
 
 
+// ***********************
+// GET ACCEPTED TASK SHARES
+// ***********************
 
+app.get("/api/accepted-shared/task", async (req, res) => {
+    const loggedInUserId = req.signedCookies["user-id"];
 
+    if (!loggedInUserId) {
+        return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    try{
+
+        const result = await pool.query(
+            `SELECT uID, fName, lName 
+            FROM User
+            JOIN UserSharesTask ust ON User.uID = ust.sharer_uID
+            WHERE ust.shared_with_uID = ?
+            AND ust.is_accepted = TRUE;`,
+            [loggedInUserId]
+        );
+
+        res.status(200).json(result);
+    }catch (e){
+        res.status(500).json({ error: "Failed to get shared tasks from database" });
+    }
+});
+
+// ***********************
+// GET ACCEPTED LIST SHARES
+// ***********************
+
+app.get("/api/accepted-shared/list", async (req, res) => {
+    const loggedInUserId = req.signedCookies["user-id"];
+
+    if (!loggedInUserId) {
+        return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    try{
+
+        const result = await pool.query(
+            `SELECT uID, fName, lName 
+            FROM User
+            JOIN UserSharesList ust ON User.uID = ust.sharer_uID
+            WHERE ust.shared_with_uID = ?
+            AND ust.is_accepted = TRUE;`,
+            [loggedInUserId]
+        );
+
+        res.status(200).json(result);
+    }catch (e){
+        res.status(500).json({ error: "Failed to get shared lists from database" });
+    }
+});
 
 
 
