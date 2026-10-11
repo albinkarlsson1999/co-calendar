@@ -194,7 +194,7 @@ async function handleShowActiveSharesPopUp() {
 
     const activeTasks = await handleShareArray("task")
     const activeLists = await handleShareArray("list")
-    
+
     popUpWindowInputContainer.append(activeTasks);
     popUpWindowInputContainer.append(activeLists);
 
@@ -286,6 +286,7 @@ function standardSubmitButton() {
 function clearInputContainers() {
     popUpWindowInputContainer.innerHTML = "";
     popUpWindowButtonContainer.innerHTML = "";
+    requestList.innerHTML = "";
 }
 
 async function handleShareArray(type, isOwn = false) {
