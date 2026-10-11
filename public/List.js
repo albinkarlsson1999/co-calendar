@@ -62,7 +62,7 @@ function createListBox(list, isOwner) {
                 }
             }
         });
-        
+
         titleDiv.appendChild(deleteButton);
 
     } else {
@@ -107,13 +107,31 @@ async function loadListElements(listId, isOwner) {
     console.log(listElements);
 
     // apply all properties to each list elements, possibly move this to a separate function
-    for (listElement of listElements) {
-        const tempElement = document.createElement("li");
+    for (const listElement of listElements) {
+        const taskElementContainer = document.createElement("div");
+        taskElementContainer.style.display = "flex";
+
+        const tempElement = document.createElement("p");
         tempElement.classList.add("list-element");
         tempElement.textContent = listElement.title;
         tempElement.dataset.id = listElement.id;
 
         if (isOwner) {
+            const checkBox = document.createElement("input");
+            checkBox.classList.add("checkbox");
+            checkBox.type = "checkbox";
+            checkBox.checked = listElement.is_checked;
+            checkBox.addEventListener("click", async () => {
+                const update = await checkListElement(tempElement.dataset.id, checkBox.checked);
+                if (checkBox.checked) {
+                    tempElement.classList.add("checked");
+                }else{
+                    tempElement.classList.remove("checked");
+                }
+            });
+
+            taskElementContainer.append(checkBox);
+
             tempElement.classList.add("interractable");
             tempElement.addEventListener("click", (e) => {
                 e.stopPropagation();
@@ -124,7 +142,12 @@ async function loadListElements(listId, isOwner) {
                 editTaskWindow.append(optionWindow);
             });
         }
-        container.append(tempElement);
+        if (listElement.is_checked) {
+            tempElement.classList.add("checked");
+        }
+
+        taskElementContainer.append(tempElement);
+        container.append(taskElementContainer);
     }
     return container;
 }
@@ -214,6 +237,24 @@ async function getListElementsFromBackend(listId) {
         }
     } catch (e) {
         console.error("Failed to get ListElements from backend", e);
+    }
+}
+
+async function checkListElement(elementId, isChecked) {
+    try {
+        const response = await fetch(`/api/lists/elements/${elementId}/${isChecked}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data;
+        }
+    } catch (e) {
+        console.error("Failed to update List Element", e);
     }
 }
 

@@ -2,7 +2,7 @@
     --section-divider-theme: #0358a8;
     --theme-dark: rgb(106, 170, 253);
     --theme-light: rgba(106, 170, 253, 0.541);
-    --hover-green: rgb(69, 235, 3); 
+    --hover-green: rgb(69, 235, 3);
     --hover-day: rgb(197, 255, 174);
     --selected-day: rgb(134, 229, 134);
     --border-gray: #d4d4d4;/
@@ -11,7 +11,8 @@
 #error-message {
     color: red;
     font-weight: bold;
-    font-family: Comics Sans MS, Comic Sans, cursive; /* COMIC SANS LOOOOOOL */ 
+    font-family: Comics Sans MS, Comic Sans, cursive;
+    /* COMIC SANS LOOOOOOL */
 }
 
 .hidden {
@@ -57,7 +58,7 @@
     overflow-x: hidden;
 }
 
-.day-section:hover{
+.day-section:hover {
     background-color: var(--hover-day);
 }
 
@@ -203,7 +204,7 @@
     color: red;
 }
 
-.list-container{
+.list-container {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -234,7 +235,7 @@
     background-color: rgb(197, 255, 174);
 }
 
-.list-box.not-owned{
+.list-box.not-owned {
     border: solid gray;
     border-color: gray;
 }
@@ -283,7 +284,7 @@
     border-bottom: dashed var(--theme-dark);
 }
 
-.list-title-container.not-owned{
+.list-title-container.not-owned {
     border-bottom: dashed gray;
     border-color: gray;
 }
@@ -296,7 +297,7 @@
     text-align: center;
 }
 
-.list-title.interractable:hover{
+.list-title.interractable:hover {
     cursor: pointer;
 }
 
@@ -319,4 +320,14 @@
 .create-new-list-button:hover {
     background-color: var(--hover-green);
     cursor: pointer;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checked{
+    text-decoration: line-through;
 }

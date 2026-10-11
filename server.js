@@ -1068,6 +1068,41 @@ app.put("/api/lists/elements/:elementId", async (req, res) => {
 
 
 
+app.put("/api/lists/elements/:elementId/:isChecked", async (req, res) => {
+    const loggedInUserId = req.signedCookies["user-id"];
+
+    if (!loggedInUserId) {
+        return res.status(401).json({ error: "Unauthorized. Please log in." });
+    }
+
+    const { elementId, isChecked } = req.params;
+
+    const isCheckedBool = ((isChecked === "true") ? 1 : 0);
+
+    try {
+
+        const result = await pool.query(
+            "UPDATE ListElement SET is_checked = ? WHERE leID = ?",
+            [isCheckedBool, elementId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Element not found or not authorized to user" });
+        }
+
+        const updatedElement = {
+            id: elementId,
+            is_checked: isCheckedBool
+        };
+
+        res.json(updatedElement);
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: "Failed to update element in list in database" });
+    }
+});
+
+
 // ***********************
 // GET ACCEPTED SHARES
 // ***********************
