@@ -18,6 +18,9 @@ class Calendar {
         "Thu", "Fri", "Sat", "Sun"
     ];
 
+    databaseHandler = null;
+    elementEditor = null;
+
     selectedDay = null;
     selectedDate = null;
     scheduleSection = null;
@@ -25,9 +28,10 @@ class Calendar {
     previousMonthButton = null;
     nextMonthButton = null;
 
-    elementEditor = null;
-
     constructor() {
+
+        this.databaseHandler = new DatabaseHandler();
+        this.elementEditor = new ElementEditor(this.databaseHandler);
 
         this.selectedDate = new Date();
         this.scheduleSection = document.getElementById("schedule-section");
@@ -45,8 +49,6 @@ class Calendar {
             this.selectedDate.setMonth(this.selectedDate.getMonth() + 1);
             this.#displayMonth();
         });
-
-        this.elementEditor = new ElementEditor(this);
 
         this.#displayMonth();
     }
@@ -153,15 +155,9 @@ class Calendar {
         const year = this.selectedDate.getFullYear();
         const month = this.selectedDate.getMonth() + 1;
 
-        try {
-            const result = await fetch(`/api/tasks/${year}/${month}`, {
-                method: "GET",
-            });
+        const tasks = await this.databaseHandler.getCalendarTasks(year, month);
 
-            if (!result.ok) return;
-
-            const tasks = await result.json();
-            for (const task of tasks) {
+        for (const task of tasks) {
 
                 const daySection = document.getElementById(task.task_date);
                 if (daySection) {
@@ -170,11 +166,6 @@ class Calendar {
                     daySection.append(tempTask);
                 }
             }
-
-        } catch (e) {
-            console.log("Error loading", e);
-        }
-
     }
 
     async #saveTask(title, parentElement) {
@@ -182,23 +173,11 @@ class Calendar {
         const year = this.selectedDate.getFullYear();
         const month = this.selectedDate.getMonth() + 1;
 
-        try {
-            const response = await fetch(`/api/tasks/${year}/${month}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ task_date: taskDate, title: title })
-            });
+        const savedTask = await this.databaseHandler.saveCalendarTask(year, month, taskDate, title);
 
-            if (response.ok) {
-                const savedTask = await response.json();
-                const finishedTask = this.#createTaskElement(savedTask.title, savedTask.id, true);
-                this.selectedDay.insertBefore(finishedTask, parentElement);
-            }
-        } catch (e) {
-            console.log("Failed to save task: ", e);
-        }
+        const finishedTask = this.#createTaskElement(savedTask.title, savedTask.id, true);
+        this.selectedDay.insertBefore(finishedTask, parentElement);
+        
     }
 
     #changeFocusedDay(dayElement) {

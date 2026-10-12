@@ -1,9 +1,9 @@
 class ElementEditor {
 
-    calendar
+    databaseHandler = null;
 
-    constructor(calendar) {
-        this.calendar = calendar;
+    constructor(databaseHandler) {
+        this.databaseHandler = databaseHandler;
     }
 
     createOptionWindow(element, type) {
@@ -41,11 +41,10 @@ class ElementEditor {
             deleteButton.addEventListener("click", async () => {
                 switch (type) {
                     case "task": {
-                        const path = `tasks/${this.calendar.getYear()}/${this.calendar.getMonth()}`;
-                        await this.#deleteElement(element, path);
+                        await this.#deleteElement(element, "tasks");
                         break;
                     }
-                    case "list-element":{
+                    case "list-element": {
                         await this.#deleteElement(element, "lists/elements", element.parentElement);
                         break;
                     }
@@ -75,21 +74,11 @@ class ElementEditor {
     async #deleteElement(element, path, parentElement = null) {
         const elementId = element.dataset.id;
 
-        try {
-            const response = await fetch(`/api/${path}/${elementId}`, {
-                method: "DELETE",
-            });
+        await this.databaseHandler.deleteFromDatabase(path, elementId);
 
-            if (response.ok) {
-                element.remove();
-                const data = await response.json();
-                console.log(data.message);
-                if (parentElement) {
-                    parentElement.remove();
-                }
-            }
-        } catch (e) {
-            console.log("Error deleting taks", e);
+        element.remove();
+        if (parentElement) {
+            parentElement.remove();
         }
     }
 

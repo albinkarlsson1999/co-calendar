@@ -661,7 +661,7 @@ app.post("/api/tasks/:year/:month", async (req, res) => {
 // **********************
 // DELETE TASK
 // **********************
-app.delete("/api/tasks/:year/:month/:id", async (req, res) => {
+app.delete("/api/tasks/delete/:id", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
     if (!loggedInUserId) {
@@ -831,10 +831,12 @@ app.post("/api/lists", async (req, res) => {
     }
 });
 
+
+
 // ***********************
 // DELETE LIST
 // ***********************
-app.delete("/api/lists/:id", async (req, res) => {
+app.delete("/api/lists/delete/:id", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
     if (!loggedInUserId) {
@@ -857,6 +859,8 @@ app.delete("/api/lists/:id", async (req, res) => {
         res.status(500).json({ error: "Failed to delete list from database" });
     }
 });
+
+
 
 // ***********************
 // UPDATE LIST
@@ -997,7 +1001,7 @@ app.post("/api/lists/:listId/elements", async (req, res) => {
 // ***********************
 // DELETE ELEMENT FROM LIST
 // ***********************
-app.delete("/api/lists/elements/:elementId", async (req, res) => {
+app.delete("/api/lists/elements/delete/:elementId", async (req, res) => {
     const loggedInUserId = req.signedCookies["user-id"];
 
     if (!loggedInUserId) {

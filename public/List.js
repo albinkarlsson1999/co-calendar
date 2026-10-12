@@ -3,7 +3,8 @@ const emptyList = document.getElementById("empty-list");
 emptyList.classList.add("empty");
 const createNewListButton = document.getElementById("create-new-list-button");
 
-const elementEditor = new ElementEditor();
+const databaseHandler = new DatabaseHandler();
+const elementEditor = new ElementEditor(databaseHandler);
 
 if (createNewListButton) {
     const parent = createNewListButton.parentElement;
@@ -19,15 +20,14 @@ if (createNewListButton) {
     createNewListButton.addEventListener("click", () => {
         createNewList(emptyList);
     })
-}
-else {
+} else {
     console.log("NO BUTTON FOUND");
 }
 
 function createListBox(list, isOwner) {
     const listBox = document.createElement("div");
     listBox.classList.add("list-box");
-    listBox.id = `list-${list.id}`;
+    listBox.dataset.id = list.id;
 
     const titleDiv = document.createElement("div");
     titleDiv.classList.add("list-title-container");
@@ -76,7 +76,7 @@ function setUpOwnerList(listBox, titleElement, titleDiv) {
     deleteButton.addEventListener("click", async () => {
         const confirmed = confirm(`Are you sure you want to delete the list "${list.title}"?`);
         if (confirmed) {
-            const success = await deleteListFromBackend(list.id);
+            const success = await databaseHandler.deleteFromDatabase("lists", listBox.dataset.id);
             if (success) {
                 listBox.remove();
             } else {
@@ -89,7 +89,7 @@ function setUpOwnerList(listBox, titleElement, titleDiv) {
 }
 
 async function loadLists() {
-    const lists = await getListsFromBackend();
+    const lists = await databaseHandler.getLists();
     const container = emptyList.parentElement;
 
     console.log(lists);
@@ -115,7 +115,7 @@ async function loadListElements(listId, isOwner) {
     const container = document.createElement("div");
     container.classList.add("list-element-container");
 
-    const listElements = await getListElementsFromBackend(listId);
+    const listElements = await databaseHandler.getListElements(listId);
 
     console.log(listElements);
 
@@ -140,10 +140,10 @@ function createAddElementButton(listId, elementContainer) {
         inputField.addEventListener("keydown", async (e) => {
             if (e.key === "Enter") {
                 const title = inputField.value.trim();
-                const newListElement = await saveListElementToBackend(listId, title);
-                if(newListElement) {
+                const newListElement = await databaseHandler.saveListElement(listId, title);
+                if (newListElement) {
                     addElementButton.parentElement.insertBefore(createListElement(newListElement, true), addElementButton);
-                }else{
+                } else {
                     console.error("Failed to save the new list element. Please try again.");
                 }
                 addElementButton.style.display = "block";
@@ -161,46 +161,46 @@ function createAddElementButton(listId, elementContainer) {
 
 function createListElement(listElement, isOwner) {
     const taskElementContainer = document.createElement("div");
-        taskElementContainer.style.display = "flex";
+    taskElementContainer.style.display = "flex";
 
-        const tempElement = document.createElement("p");
-        tempElement.classList.add("list-element");
-        tempElement.textContent = listElement.title;
-        tempElement.dataset.id = listElement.id;
+    const tempElement = document.createElement("p");
+    tempElement.classList.add("list-element");
+    tempElement.textContent = listElement.title;
+    tempElement.dataset.id = listElement.id;
 
-        if (isOwner) {
-            const checkBox = document.createElement("input");
-            checkBox.classList.add("checkbox");
-            checkBox.type = "checkbox";
-            checkBox.checked = listElement.is_checked;
-            checkBox.addEventListener("click", async () => {
-                const update = await checkListElement(tempElement.dataset.id, checkBox.checked);
-                if (checkBox.checked) {
-                    tempElement.classList.add("checked");
-                } else {
-                    tempElement.classList.remove("checked");
-                }
-            });
+    if (isOwner) {
+        const checkBox = document.createElement("input");
+        checkBox.classList.add("checkbox");
+        checkBox.type = "checkbox";
+        checkBox.checked = listElement.is_checked;
+        checkBox.addEventListener("click", async () => {
+            const update = await checkListElement(tempElement.dataset.id, checkBox.checked);
+            if (checkBox.checked) {
+                tempElement.classList.add("checked");
+            } else {
+                tempElement.classList.remove("checked");
+            }
+        });
 
-            taskElementContainer.append(checkBox);
+        taskElementContainer.append(checkBox);
 
-            tempElement.classList.add("interractable");
-            tempElement.addEventListener("click", (e) => {
-                e.stopPropagation();
+        tempElement.classList.add("interractable");
+        tempElement.addEventListener("click", (e) => {
+            e.stopPropagation();
 
-                const editTaskWindow = document.getElementById("edit-list-window");
-                const optionWindow = elementEditor.createOptionWindow(tempElement, "list-element");
+            const editTaskWindow = document.getElementById("edit-list-window");
+            const optionWindow = elementEditor.createOptionWindow(tempElement, "list-element");
 
-                editTaskWindow.append(optionWindow);
-            });
-        }
-        if (listElement.is_checked) {
-            tempElement.classList.add("checked");
-        }
+            editTaskWindow.append(optionWindow);
+        });
+    }
+    if (listElement.is_checked) {
+        tempElement.classList.add("checked");
+    }
 
-        taskElementContainer.append(tempElement);
+    taskElementContainer.append(tempElement);
 
-        return taskElementContainer;
+    return taskElementContainer;
 }
 
 function createNewList(callerElement) {
@@ -230,7 +230,7 @@ function createNewList(callerElement) {
             const title = titleInput.value.trim();
             if (title) {
                 // Spara till backend här
-                const savedList = await saveListToBackend(title);
+                const savedList = await databaseHandler.saveList(title);
                 if (savedList) {
                     newList.replaceWith(createListBox(savedList, true));
                 } else {
@@ -250,47 +250,6 @@ function createNewList(callerElement) {
 
 }
 
-async function getListsFromBackend() {
-    try {
-        const response = await fetch('/api/lists', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log("Fetched lists from backend:", data);
-            return data; // Return the fetched lists
-        } else {
-            console.error("Failed to fetch lists from backend:", data);
-            return []; // Return an empty array on failure
-        }
-    } catch (error) {
-        console.error("Error fetching lists from backend:", error);
-        return []; // Return an empty array on error
-    }
-}
-
-async function getListElementsFromBackend(listId) {
-    try {
-        const response = await fetch(`/api/lists/${listId}/elements`, {
-            method: "GET",
-            header: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data.elements;
-        }
-    } catch (e) {
-        console.error("Failed to get ListElements from backend", e);
-    }
-}
-
 async function checkListElement(elementId, isChecked) {
     try {
         const response = await fetch(`/api/lists/elements/${elementId}/${isChecked}`, {
@@ -306,69 +265,6 @@ async function checkListElement(elementId, isChecked) {
         }
     } catch (e) {
         console.error("Failed to update List Element", e);
-    }
-}
-
-async function saveListToBackend(title) {
-    try {
-        const response = await fetch('/api/lists', {
-            method: 'POST',
-            body: JSON.stringify({ title }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log("Saved new list to backend:", data);
-            return data; // Return the saved list
-        } else {
-            console.error("Error saving new list to backend:", data);
-            return null; // Return null on failure
-        }
-    } catch (error) {
-        console.error("Error saving new list to backend:", error);
-        return null; // Return null on error
-    }
-}
-
-async function saveListElementToBackend(listId, title) {
-    try {
-        const response = await fetch(`/api/lists/${listId}/elements`, {
-            method: 'POST',
-            body: JSON.stringify({ title }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-            console.log("Saved new list element to backend:", data);
-            return data;
-        }
-    } catch (e) {
-        console.error("Error saving new list element to backend:", e);
-    }
-}
-
-
-async function deleteListFromBackend(listId) {
-    try {
-        const response = await fetch(`/api/lists/${listId}`, {
-            method: 'DELETE',
-        });
-        if (response.ok) {
-            console.log(`List with ID ${listId} deleted successfully.`);
-            return true;
-        } else {
-            console.error(`Failed to delete list with ID ${listId}.`);
-            return false;
-        }
-    } catch (error) {
-        console.error(`Error deleting list with ID ${listId}:`, error);
-        return false;
     }
 }
 
