@@ -964,11 +964,11 @@ app.post("/api/lists/:listId/elements", async (req, res) => {
     }
 
     const { listId } = req.params;
-    const { title, description } = req.body;
+    const { title } = req.body;
 
 
-    if (!title || !description) {
-        return res.status(400).json({ error: 'title and description required' });
+    if (!title) {
+        return res.status(400).json({ error: 'title required' });
     }
 
     try {
@@ -977,14 +977,13 @@ app.post("/api/lists/:listId/elements", async (req, res) => {
         }
 
         const result = await pool.query(
-            "INSERT INTO ListElement (title, lID) VALUES (?, ?, ?)",
-            [title.trim(), description.trim(), listId]
+            "INSERT INTO ListElement (title, lID) VALUES (?, ?)",
+            [title.trim(), listId]
         );
 
         const newElement = {
             id: result.insertId.toString(),
             title: title.trim(),
-            description: description.trim(),
             is_checked: false
         };
         res.status(201).json(newElement);

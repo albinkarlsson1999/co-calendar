@@ -322,6 +322,17 @@
     cursor: pointer;
 }
 
+.add-element-button{
+    border: hidden;
+    border-radius: 5px;
+    background-color: rgb(187, 187, 187);
+}
+
+.add-element-button:hover {
+    background-color: var(--hover-green);
+    cursor: pointer;
+}
+
 .checkbox {
     width: 20px;
     height: 20px;

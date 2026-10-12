@@ -38,32 +38,8 @@ function createListBox(list, isOwner) {
     titleElement.dataset.id = list.id;
 
     if (isOwner) {
-        titleElement.classList.add("interrractable");
-        titleElement.addEventListener("click", (e) => {
-            e.stopPropagation();
 
-            const editTaskWindow = document.getElementById("edit-list-window");
-            const optionWindow = elementEditor.createOptionWindow(titleElement, "list-title");
-
-            editTaskWindow.append(optionWindow);
-        });
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "X";
-        deleteButton.classList.add("delete-button");
-        deleteButton.addEventListener("click", async () => {
-            const confirmed = confirm(`Are you sure you want to delete the list "${list.title}"?`);
-            if (confirmed) {
-                const success = await deleteListFromBackend(list.id);
-                if (success) {
-                    listBox.remove();
-                } else {
-                    alert("Failed to delete the list. Please try again.");
-                }
-            }
-        });
-
-        titleDiv.appendChild(deleteButton);
+        setUpOwnerList(listBox, titleElement, titleDiv);
 
     } else {
         titleDiv.classList.add("not-owned");
@@ -82,6 +58,36 @@ function createListBox(list, isOwner) {
     return listBox;
 }
 
+function setUpOwnerList(listBox, titleElement, titleDiv) {
+
+    titleElement.classList.add("interrractable");
+    titleElement.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        const editTaskWindow = document.getElementById("edit-list-window");
+        const optionWindow = elementEditor.createOptionWindow(titleElement, "list-title");
+
+        editTaskWindow.append(optionWindow);
+    });
+
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "X";
+    deleteButton.classList.add("delete-button");
+    deleteButton.addEventListener("click", async () => {
+        const confirmed = confirm(`Are you sure you want to delete the list "${list.title}"?`);
+        if (confirmed) {
+            const success = await deleteListFromBackend(list.id);
+            if (success) {
+                listBox.remove();
+            } else {
+                alert("Failed to delete the list. Please try again.");
+            }
+        }
+    });
+
+    titleDiv.appendChild(deleteButton);
+}
+
 async function loadLists() {
     const lists = await getListsFromBackend();
     const container = emptyList.parentElement;
@@ -89,12 +95,19 @@ async function loadLists() {
     console.log(lists);
 
     for (list of lists) {
-        const listBox = createListBox(list, list.is_owner);
+        const isOwner = list.is_owner;
+
+        const listBox = createListBox(list, isOwner);
         container.insertBefore(listBox, emptyList);
 
         // read in all list elements in a div container and append it to the listBox
-        const elementContainer = await loadListElements(list.id, list.is_owner);
+        const elementContainer = await loadListElements(list.id, isOwner);
         listBox.append(elementContainer);
+
+        if (isOwner) {
+            const addElementButton = createAddElementButton(list.id, elementContainer);
+            elementContainer.append(addElementButton);
+        }
     };
 }
 
@@ -106,9 +119,48 @@ async function loadListElements(listId, isOwner) {
 
     console.log(listElements);
 
-    // apply all properties to each list elements, possibly move this to a separate function
     for (const listElement of listElements) {
-        const taskElementContainer = document.createElement("div");
+        const newListElement = createListElement(listElement, isOwner);
+        container.append(newListElement);
+    }
+    return container;
+}
+
+function createAddElementButton(listId, elementContainer) {
+    const addElementButton = document.createElement("button");
+    addElementButton.textContent = "+";
+    addElementButton.classList.add("add-element-button");
+
+    addElementButton.addEventListener("click", () => {
+        const inputField = document.createElement("input");
+        inputField.type = "text";
+        inputField.placeholder = "Enter text";
+        inputField.style.textAlign = "center";
+
+        inputField.addEventListener("keydown", async (e) => {
+            if (e.key === "Enter") {
+                const title = inputField.value.trim();
+                const newListElement = await saveListElementToBackend(listId, title);
+                if(newListElement) {
+                    addElementButton.parentElement.insertBefore(createListElement(newListElement, true), addElementButton);
+                }else{
+                    console.error("Failed to save the new list element. Please try again.");
+                }
+                addElementButton.style.display = "block";
+                inputField.remove();
+            }
+        });
+
+        addElementButton.style.display = "none";
+        elementContainer.appendChild(inputField);
+        inputField.focus();
+    });
+
+    return addElementButton;
+}
+
+function createListElement(listElement, isOwner) {
+    const taskElementContainer = document.createElement("div");
         taskElementContainer.style.display = "flex";
 
         const tempElement = document.createElement("p");
@@ -125,7 +177,7 @@ async function loadListElements(listId, isOwner) {
                 const update = await checkListElement(tempElement.dataset.id, checkBox.checked);
                 if (checkBox.checked) {
                     tempElement.classList.add("checked");
-                }else{
+                } else {
                     tempElement.classList.remove("checked");
                 }
             });
@@ -147,9 +199,8 @@ async function loadListElements(listId, isOwner) {
         }
 
         taskElementContainer.append(tempElement);
-        container.append(taskElementContainer);
-    }
-    return container;
+
+        return taskElementContainer;
 }
 
 function createNewList(callerElement) {
@@ -181,7 +232,7 @@ function createNewList(callerElement) {
                 // Spara till backend här
                 const savedList = await saveListToBackend(title);
                 if (savedList) {
-                    newList.replaceWith(createListBox(savedList));
+                    newList.replaceWith(createListBox(savedList, true));
                 } else {
                     console.error("Failed to save the new list. Please try again.");
                 }
@@ -281,6 +332,27 @@ async function saveListToBackend(title) {
         return null; // Return null on error
     }
 }
+
+async function saveListElementToBackend(listId, title) {
+    try {
+        const response = await fetch(`/api/lists/${listId}/elements`, {
+            method: 'POST',
+            body: JSON.stringify({ title }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log("Saved new list element to backend:", data);
+            return data;
+        }
+    } catch (e) {
+        console.error("Error saving new list element to backend:", e);
+    }
+}
+
 
 async function deleteListFromBackend(listId) {
     try {

@@ -46,7 +46,7 @@ class ElementEditor {
                         break;
                     }
                     case "list-element":{
-                        await this.#deleteElement(element, "lists/elements");
+                        await this.#deleteElement(element, "lists/elements", element.parentElement);
                         break;
                     }
                 }
@@ -72,7 +72,7 @@ class ElementEditor {
         return window;
     }
 
-    async #deleteElement(element, path) {
+    async #deleteElement(element, path, parentElement = null) {
         const elementId = element.dataset.id;
 
         try {
@@ -84,6 +84,9 @@ class ElementEditor {
                 element.remove();
                 const data = await response.json();
                 console.log(data.message);
+                if (parentElement) {
+                    parentElement.remove();
+                }
             }
         } catch (e) {
             console.log("Error deleting taks", e);
