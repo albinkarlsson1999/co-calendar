@@ -137,4 +137,40 @@ class DatabaseHandler {
             return false;
         }
     }
+
+    async editInDatabase(editedText, path, id) {
+        try {
+            const response = await fetch(`/api/${path}/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ title: editedText })
+            });
+
+            if (response.ok) {
+                return true;
+            }
+        } catch (e) {
+            console.error("Failed to edit", e);
+        }
+    }
+
+    async editCheckboxOfListElement(elementId, isChecked) {
+        try {
+            const response = await fetch(`/api/lists/elements/${elementId}/${isChecked}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            }
+        } catch (e) {
+            console.error("Failed to update List Element", e);
+        }
+    }
 }

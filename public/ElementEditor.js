@@ -86,22 +86,11 @@ class ElementEditor {
         const elementId = element.dataset.id;
         console.log(elementId);
 
-        try {
-            const response = await fetch(`/api/${path}/${elementId}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ title: editedText })
-            });
-
-            if (response.ok) {
-                element.textContent = editedText;
-                return true;
-            }
-        } catch (e) {
-            console.error("Failed to edit", e);
+        if( await this.databaseHandler.editInDatabase(editedText, path, elementId)){
+            element.textContent = editedText;
+            return true;
         }
+
         return false;
     }
 

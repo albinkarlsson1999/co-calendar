@@ -118,14 +118,6 @@ class Calendar {
         calendarHeader.textContent = Calendar.monthNames[month] + " " + this.selectedDate.getFullYear();;
     }
 
-    getYear(){
-        return this.selectedDate.getFullYear();
-    }
-
-    getMonth(){
-        return this.selectedDate.getMonth() + 1;
-    }
-
     #createDayNode(dayName, dayNumber, month, isEmpty) {
         const daySection = document.createElement("section");
         daySection.setAttribute("id", `${this.selectedDate.getFullYear()}-${String(month).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`);

@@ -174,7 +174,7 @@ function createListElement(listElement, isOwner) {
         checkBox.type = "checkbox";
         checkBox.checked = listElement.is_checked;
         checkBox.addEventListener("click", async () => {
-            const update = await checkListElement(tempElement.dataset.id, checkBox.checked);
+            await databaseHandler.editCheckboxOfListElement(tempElement.dataset.id, checkBox.checked);
             if (checkBox.checked) {
                 tempElement.classList.add("checked");
             } else {
@@ -248,24 +248,6 @@ function createNewList(callerElement) {
     parent.insertBefore(newList, callerElement);
     titleInput.focus();
 
-}
-
-async function checkListElement(elementId, isChecked) {
-    try {
-        const response = await fetch(`/api/lists/elements/${elementId}/${isChecked}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            return data;
-        }
-    } catch (e) {
-        console.error("Failed to update List Element", e);
-    }
 }
 
 loadLists();
