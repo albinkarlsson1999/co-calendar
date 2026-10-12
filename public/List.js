@@ -232,7 +232,13 @@ function createNewList(callerElement) {
                 // Spara till backend här
                 const savedList = await databaseHandler.saveList(title);
                 if (savedList) {
-                    newList.replaceWith(createListBox(savedList, true));
+                    const listBox = createListBox(savedList, true);
+                    const elementContainer = document.createElement("div");
+                    elementContainer.classList.add("list-element-container");
+                    const addElementButton = createAddElementButton(savedList.id, elementContainer);
+                    elementContainer.append(addElementButton);
+                    listBox.append(elementContainer);
+                    newList.replaceWith(listBox);
                 } else {
                     console.error("Failed to save the new list. Please try again.");
                 }
