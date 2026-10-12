@@ -382,7 +382,7 @@ async function requestChangeName(firstName, lastName) {
         popupWindowErrorMessage.textContent = "";
         hidePopUpWindow();
 
-        localStorage.setItem("firstName", newName);
+        localStorage.setItem("firstName", firstName);
     } else {
         popupWindowErrorMessage.textContent = "Failed to change name. Please try again.";
     }
