@@ -165,11 +165,20 @@ async function handleShareRequestsPopUp() {
         const listItem = document.createElement("li");
         console.log(share.fName, share.lName, share.type)
 
-        listItem.innerHTML = `
-            <p>${share.fName} ${share.lName} has sent you a share request for their ${share.type}.</p>
-            <button class="accept-button">Accept</button>
-            <button class="decline-button">Decline</button>
-        `;
+        const message = document.createElement("p");
+        message.textContent = `${share.fName} ${share.lName} has sent you a share request for their ${share.type}.`;
+        listItem.appendChild(message);
+        
+        const acceptBut = document.createElement("button");
+        acceptBut.textContent = "Accept";
+        acceptBut.classList.add("accept-button");
+        listItem.appendChild(acceptBut);
+        let declineBut = document.createElement("button");
+        declineBut.textContent = "Decline";
+        declineBut.classList.add("decline-button");
+        listItem.appendChild(declineBut);
+
+        
         requestList.appendChild(listItem);
 
         const acceptButton = listItem.querySelector(".accept-button");
@@ -350,7 +359,7 @@ async function requestChangePassword(newPassword, currentPassword) {
         hidePopUpWindow();
         popupWindowErrorMessage.textContent = "";
     } else {
-        popupWindowErrorMessage.textContent = "Failed to change password. Please try again.";
+        popupWindowErrorMessage.textContent = "data.error || 'Failed to change password. Please try again.'";
     }
 }
 
