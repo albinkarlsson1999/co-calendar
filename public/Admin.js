@@ -1,3 +1,5 @@
+const errorMessageElement = document.getElementById('error-message');
+
 async function loadUsers() {
     try {
         const response = await fetch('/admin/users');
@@ -28,7 +30,7 @@ async function loadUsers() {
         });
     } catch (e) {
         console.error(e);
-        alert("Error loading users");
+        errorMessageElement.textContent = "Error loading users. Please try again later.";
     }
 }
 
@@ -48,7 +50,7 @@ function deleteUser(userId) {
         })
         .catch(error => {
             console.error(error);
-            alert("Error deleting user");
+            errorMessageElement.textContent = "Error deleting user. Please try again later.";
         });
     }
 }
@@ -71,7 +73,7 @@ function toggleAdmin(userId, isAdmin) {
     })
     .catch(error => {
         console.error(error);
-        alert("Error toggling admin status");
+        errorMessageElement.textContent = "Error toggling admin status. Please try again later.";
     });
 }
 
