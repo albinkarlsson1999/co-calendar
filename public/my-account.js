@@ -421,6 +421,7 @@ async function loadShareRequests() {
 
     } catch (error) {
         console.error("Error loading share requests:", error);
+        return [];
     }
 }
 
@@ -439,6 +440,7 @@ async function getAcceptedShares(type) {
         }
     } catch (e) {
         console.error(`Error loading accepted ${type} shares`, e);
+        return [];
     }
 }
 
@@ -457,6 +459,7 @@ async function getMySharedShares(type) {
         }
     } catch (e) {
         console.error(`Error loading your shared ${type} items`, e);
+        return [];
     }
 }
 
