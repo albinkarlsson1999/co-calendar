@@ -66,7 +66,7 @@ class UserNavigationHandler {
         const sendLists = document.getElementById("share-lists-checkbox").checked;
 
         if (email) {
-            this.#showMessage(await this.shareElements(email, sendTasks, sendLists));
+            this.#showMessage(await this.#shareElements(email, sendTasks, sendLists));
             shareWindow.style.display = "none";
         }
         document.getElementById("share-email").value = "";
@@ -110,34 +110,23 @@ class UserNavigationHandler {
         confirmationWindow.style.display = "flex";
     }
 
-    async shareElements(email, willShareTasks, willShareLists) {
+    async #shareElements(email, willShareTasks, willShareLists) {
         const results = [];
 
         if (willShareTasks) {
-            try {
-                const response = await fetch("/api/tasks/share", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    results.push("Succeeded to share tasks");
-                } else {
-                    results.push("Failed to share tasks: " + data.error);
-                }
-            } catch (e) {
-                console.error("Failed to share:", e);
-            }
+            results.push(await this.#sendShareRequest("tasks", email))
         }
 
         if (willShareLists) {
-            try {
-                const response = await fetch("/api/lists/share", {
+            results.push(await this.#sendShareRequest("lists", email));
+        }
+
+        return results;
+    }
+
+    async #sendShareRequest(type, email){
+        try {
+                const response = await fetch(`/api/${type}/share`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -148,17 +137,13 @@ class UserNavigationHandler {
                 const data = await response.json();
 
                 if (response.ok) {
-                    results.push("Succeeded to share lists");
+                    return `Succeeded to share ${type}`;
                 } else {
-                    results.push("Failed to share lists:" + data.error);
+                    return `Failed to share ${type}:  ${data.error}`;
                 }
             } catch (e) {
                 console.error("Failed to share:", e);
             }
-
-        }
-
-        return results;
     }
 }
 
