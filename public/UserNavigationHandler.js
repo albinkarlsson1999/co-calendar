@@ -57,23 +57,61 @@ class UserNavigationHandler {
         submitButton.addEventListener("click", () => {
             this.#submit(shareWindow);
         });
-        
+
     }
 
-    #submit(shareWindow) {
+    async #submit(shareWindow) {
         const email = document.getElementById("share-email").value.trim();
         const sendTasks = document.getElementById("share-tasks-checkbox").checked;
         const sendLists = document.getElementById("share-lists-checkbox").checked;
 
         if (email) {
-            this.shareElements(email, sendTasks, sendLists);
-
+            this.#showMessage(await this.shareElements(email, sendTasks, sendLists));
             shareWindow.style.display = "none";
-            document.getElementById("share-email").value = "";
         }
+        document.getElementById("share-email").value = "";
+    }
+
+    #showMessage(messages) {
+        if (!messages) {
+            return;
+        }
+
+        const confirmationWindow = document.getElementById("confirmation-window");
+
+        const confirmationContent = document.getElementById("confirmation-content");
+        confirmationContent.innerHTML = "";
+
+        for (const message of messages) {
+            const messageElement = document.createElement("p");
+            messageElement.textContent = message;
+            messageElement.style.textAlign = "center";
+            messageElement.style.margin = "1px";
+            confirmationContent.append(messageElement);
+        }
+
+        const button = document.createElement("button");
+        button.textContent = "OK";
+        confirmationContent.append(button);
+
+        button.addEventListener("click", () => {
+            confirmationWindow.style.display = "none";
+            confirmationContent.innerHTML = "";
+        });
+
+        window.addEventListener("keydown", (e) => {
+            e.stopPropagation();
+            if (e.key === "Enter") {
+                confirmationWindow.style.display = "none";
+                confirmationContent.innerHTML = "";
+            }
+        });
+
+        confirmationWindow.style.display = "flex";
     }
 
     async shareElements(email, willShareTasks, willShareLists) {
+        const results = [];
 
         if (willShareTasks) {
             try {
@@ -85,9 +123,12 @@ class UserNavigationHandler {
                     body: JSON.stringify({ email })
                 });
 
+                const data = await response.json();
+
                 if (response.ok) {
-                    const data = await response.json()
-                    console.log(data.message);
+                    results.push("Succeeded to share tasks");
+                } else {
+                    results.push("Failed to share tasks: " + data.error);
                 }
             } catch (e) {
                 console.error("Failed to share:", e);
@@ -103,23 +144,21 @@ class UserNavigationHandler {
                     },
                     body: JSON.stringify({ email })
                 });
+                
+                const data = await response.json();
 
                 if (response.ok) {
-                    const data = await response.json()
-                    console.log(data.message);
+                    results.push("Succeeded to share lists");
+                } else {
+                    results.push("Failed to share lists:" + data.error);
                 }
             } catch (e) {
                 console.error("Failed to share:", e);
             }
-        }
-    }
 
-    logout() {
-        fetch('/logout', {
-            method: 'POST'
-        }).then(() => {
-            window.location.href = '/login.html';
-        })
+        }
+
+        return results;
     }
 }
 
