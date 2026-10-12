@@ -1,3 +1,4 @@
+// USE: await showConfirmationDialog("Are you sure you want to delete this item?");
 function showConfirmationDialog(message) {
     const confirmationDialog = document.getElementById('confirmation-dialog');
     const confirmationMessage = document.getElementById('confirmation-message');
@@ -27,6 +28,8 @@ function showConfirmationDialog(message) {
     });
 }
 
+
+// USE: await showErrorDialog("An error occurred while processing your request.");
 function showErrorDialog(message) {
     const errorDialog = document.getElementById('error-dialog');
     const errorMessage = document.getElementById('error-dialog-message');
