@@ -37,6 +37,7 @@ function hidePopUpWindow() {
 }
 
 function unHidePopUpWindow() {
+    popupWindowErrorMessage.textContent = "";
     backdrop.classList.remove("hidden");
     popUpWindow.classList.remove("hidden");
     POPUP_WINDOW_VISIBLE = true;
