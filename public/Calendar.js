@@ -1,12 +1,3 @@
-function logout() {
-    fetch('/logout', {
-        method: 'POST'
-    }).then(() => {
-        window.location.href = '/login.html';
-    })
-};
-
-
 class Calendar {
 
     static monthNames = [
