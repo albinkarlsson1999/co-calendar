@@ -359,7 +359,7 @@ async function requestChangePassword(newPassword, currentPassword) {
         hidePopUpWindow();
         popupWindowErrorMessage.textContent = "";
     } else {
-        popupWindowErrorMessage.textContent = "data.error || 'Failed to change password. Please try again.'";
+        popupWindowErrorMessage.textContent = data.error || "Failed to change password. Please try again.";
     }
 }
 
