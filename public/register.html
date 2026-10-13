@@ -9,8 +9,9 @@
 
 <body>
     <div class="center-box">
-        <h3 class="title">REGISTER NEW USER</h3>
         <section id="register-box" class="container">
+        <h3 class="title">REGISTER NEW USER</h3>
+        
             <form id="register-form" class="input-form">
 
                 <label for="first-name" class="hidden">First Name:</label>
@@ -29,7 +30,6 @@
                 <button type="button" class="register-button" onclick="window.location.href='/login.html'">Back</button>
             </form>
         </section>
-        <p id="error-message" role="alert"></p>
     </div>
 
     <script>
@@ -62,11 +62,15 @@
                     window.location.href = "/login.html";
                 } else {
                     const errorData = await response.json();
-                    document.getElementById("error-message").textContent = errorData.error || "Registration failed. Please try again.";
+                    const errorParagraph = document.createElement("p");
+                    errorParagraph.textContent = errorData.error || "Registration failed. Please try again.";
+                    document.getElementById("error-message").appendChild(errorParagraph);
                 }
             } catch (error) {
                 console.error("error logging in:", error);
-                document.getElementById("error-message").textContent = "Network error. Please try again later.";
+                const errorParagraph = document.createElement("p");
+                errorParagraph.textContent = "An error occurred. Please try again.";
+                document.getElementById("error-message").appendChild(errorParagraph);
             }
         });
     </script>

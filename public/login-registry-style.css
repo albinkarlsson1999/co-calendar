@@ -27,7 +27,7 @@ body {
     left: 0;
     right: 0;
     max-width: 250px;
-    max-height: 300px;
+    
     align-items: center;
     justify-content: center;
     background-color: hsl(0, 0%, 100%);
