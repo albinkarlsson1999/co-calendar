@@ -6,7 +6,7 @@ class DatabaseHandler {
                 method: "GET",
             });
 
-            if (!result.ok) return;
+            if (!result.ok) return [];
 
             const tasks = await result.json();
             return tasks;
@@ -52,8 +52,10 @@ class DatabaseHandler {
                 const data = await response.json();
                 return data.elements;
             }
+            return [];
         } catch (e) {
             console.error("Failed to get ListElements from backend", e);
+            return [];
         }
     }
 
@@ -71,8 +73,10 @@ class DatabaseHandler {
                 const savedTask = await response.json();
                 return savedTask;
             }
+            return null;
         } catch (e) {
             console.log("Failed to save task: ", e);
+            return null;
         }
     }
 
