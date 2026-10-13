@@ -12,7 +12,7 @@
 - [SOLVED] Dölj delete-knappen på listor som andra delat med dig (servern behöver skicka `is_owner` för listor)
 
 ## UX
-- [ ] Byt ut `confirm`/`alert` mot egna modaler
+- [SOLVED] Byt ut `confirm`/`alert` mot egna modaler
 - [SOLVED] Escape i titelfältet för ny lista ska avbryta
 - [SOLVED] Hindra flera "ny lista"-fält samtidigt
 - [ ] Delningsfönstret stängs innan man vet om det lyckades
