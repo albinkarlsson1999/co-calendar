@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <script src="Admin.js" defer></script>
+	<link rel="stylesheet" href="dialog-style.css">
+	<script src="Dialog.js" defer></script>
+	<script src="Admin.js" defer></script>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>CO-CALENDER - Admin</title>
 </head>
+
 <body>
 	<button onclick="logout()">Logout</button>
 	<button onclick="window.location.href='Calendar.html'">Go To Calendar</button>
@@ -15,9 +19,9 @@
 				<th>ID</th>
 				<th>First Name</th>
 				<th>Last Name</th>
-                <th>Email</th>
-                <th>Admin</th>
-                <th>Actions</th>
+				<th>Email</th>
+				<th>Admin</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody id="userTableBody">
@@ -25,5 +29,21 @@
 		</tbody>
 	</table>
 	<p id="error-message" style="color: red;"></p>
+
+	<div id="confirmation-dialog" class="dialog-backdrop">
+		<div class="dialog-box">
+			<p id="confirmation-message"></p>
+			<button id="confirm-button">Yes</button>
+			<button id="confirmation-dialog-cancel">Cancel</button>
+		</div>
+	</div>
+
+	<div id="error-dialog" class="dialog-backdrop">
+		<div class="dialog-box">
+			<p id="error-dialog-message"></p>
+			<button id="error-dialog-close">OK</button>
+		</div>
+	</div>
 </body>
+
 </html>

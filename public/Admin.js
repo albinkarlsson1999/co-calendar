@@ -1,86 +1,129 @@
 const errorMessageElement = document.getElementById('error-message');
 
+function showError(message) {
+    errorMessageElement.textContent = message;
+}
+
+function clearError() {
+    errorMessageElement.textContent = '';
+}
+
+function createCell(text) {
+    const cell = document.createElement('td');
+    cell.textContent = text;
+    return cell;
+}
+
+function createUserRow(user) {
+    const row = document.createElement('tr');
+
+    row.append(
+        createCell(user.uID),
+        createCell(user.fName),
+        createCell(user.lName),
+        createCell(user.email),
+        createCell(user.is_admin ? 'Yes' : 'No')
+    );
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.classList.add('delete-btn');
+    deleteButton.addEventListener('click', () => deleteUser(user));
+
+    const toggleButton = document.createElement('button');
+    toggleButton.textContent = 'Toggle Admin';
+    toggleButton.classList.add('edit-btn');
+    toggleButton.addEventListener('click', () => toggleAdmin(user));
+
+    const actionCell = document.createElement('td');
+    actionCell.append(deleteButton, toggleButton);
+    row.append(actionCell);
+
+    return row;
+}
+
 async function loadUsers() {
     try {
         const response = await fetch('/admin/users');
-        // Cookies skickas automatiskt, inget behöver göras!
 
         if (!response.ok) {
-            throw new Error('Failed to load users');
+            showError('Error loading users. Please try again later.');
+            return;
         }
 
         const users = await response.json();
         const tbody = document.getElementById('userTableBody');
-        tbody.innerHTML = '';
-        
-        users.forEach(user => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${user.uID}</td>
-                <td>${user.fName}</td>
-                <td>${user.lName}</td>
-                <td>${user.email}</td>
-                <td>${user.is_admin ? 'Yes' : 'No'}</td>
-                <td>
-                    <button class="delete-btn" onclick="deleteUser(${user.uID})">Delete</button>
-                    <button class="edit-btn" onclick="toggleAdmin(${user.uID}, ${user.is_admin})">Toggle Admin</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        tbody.replaceChildren();
+
+        for (const user of users) {
+            tbody.append(createUserRow(user));
+        }
+
+        clearError();
     } catch (e) {
         console.error(e);
-        errorMessageElement.textContent = "Error loading users. Please try again later.";
+        showError('Network error. Please try again later.');
     }
 }
 
-window.addEventListener('load', loadUsers);
+async function deleteUser(user) {
+    const confirmed = await showConfirmationDialog(
+        `Are you sure you want to delete ${user.fName} ${user.lName} (${user.email})?`
+    );
+    if (!confirmed) return;
 
-async function deleteUser(userId) {
-    if (await showConfirmationDialog(`Are you sure you want to delete user with ID ${userId}?`)) {
-        fetch(`/admin/users/${userId}`, {
+    try {
+        const response = await fetch(`/admin/users/${user.uID}`, {
             method: 'DELETE'
-            // Cookies skickas automatiskt!
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to delete user');
-            }
-            loadUsers();
-        })
-        .catch(error => {
-            console.error(error);
-            errorMessageElement.textContent = "Error deleting user. Please try again later.";
         });
+
+        if (!response.ok) {
+            const data = await response.json();
+            showError(data.error || 'Error deleting user. Please try again later.');
+            return;
+        }
+
+        await loadUsers();
+    } catch (e) {
+        console.error(e);
+        showError('Network error. Please try again later.');
     }
 }
 
-function toggleAdmin(userId, isAdmin) {
-    const newAdminStatus = !isAdmin;
-    fetch(`/admin/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-            // Cookies skickas automatiskt, user-id-headern är inte nödvändig!
-        },
-        body: JSON.stringify({ is_admin: newAdminStatus })
-    })
-    .then(response => {
+async function toggleAdmin(user) {
+    const newAdminStatus = !user.is_admin;
+    const action = newAdminStatus ? 'make' : 'remove';
+    const confirmed = await showConfirmationDialog(
+        newAdminStatus
+            ? `Make ${user.fName} ${user.lName} an admin?`
+            : `Remove admin rights from ${user.fName} ${user.lName}?`
+    );
+    if (!confirmed) return;
+
+    try {
+        const response = await fetch(`/admin/users/${user.uID}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_admin: newAdminStatus })
+        });
+
         if (!response.ok) {
-            throw new Error('Failed to toggle admin status');
+            const data = await response.json();
+            showError(data.error || `Failed to ${action} admin. Please try again later.`);
+            return;
         }
-        loadUsers();
-    })
-    .catch(error => {
-        console.error(error);
-        errorMessageElement.textContent = "Error toggling admin status. Please try again later.";
-    });
+
+        await loadUsers();
+    } catch (e) {
+        console.error(e);
+        showError('Network error. Please try again later.');
+    }
 }
 
 function logout() {
-    fetch('/logout', {
-        method: 'POST'
-    }).then(() => {
+    fetch('/logout', { method: 'POST' }).then(() => {
         window.location.href = '/login.html';
-    })
-};
+    });
+}
+
+window.addEventListener('load', loadUsers);
