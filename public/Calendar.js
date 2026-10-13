@@ -220,9 +220,9 @@ class Calendar {
     }
 
     #createInputField(button) {
-        if (this.selectedDay.querySelector(".input-field") == null) {
+        if (this.selectedDay.querySelector(".task-input-field") == null) {
             const inputField = document.createElement("input");
-            inputField.className = "input-field";
+            inputField.className = "task-input-field";
             inputField.type = "text";
             inputField.placeholder = "Enter Task";
 

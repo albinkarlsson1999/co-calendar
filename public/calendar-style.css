@@ -394,3 +394,11 @@ body {
     border-color: hsl(211, 100%, 50%);
     outline: none;
 }
+
+.task-input-field {
+    width: 95%;
+    padding: 2px 2px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: rgba(179, 177, 177, 0.541);
+}
