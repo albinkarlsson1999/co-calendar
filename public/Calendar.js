@@ -97,7 +97,8 @@ class Calendar {
             for (let i = 0; i < missingDays; i++) {
 
                 const dayName = Calendar.weekNames[7 - missingDays + i];
-                const tempDay = this.#createDayNode(dayName, i + 1, month + 1, true);
+                const monthNumber = (month === 12 ? 1 : month +1);
+                const tempDay = this.#createDayNode(dayName, i + 1, monthNumber, true);
                 currentWeekDiv.append(tempDay);
             }
             this.weekContainer.append(currentWeekDiv);
