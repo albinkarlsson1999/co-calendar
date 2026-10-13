@@ -79,6 +79,7 @@ body {
 }
 
 .day-section.empty {
+    cursor: pointer;
     border: 1px dashed gray;
     background-color: #d4d4d4;
 }

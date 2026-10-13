@@ -129,6 +129,14 @@ class Calendar {
         else {
             dayHeader.classList.add("day-header", "empty");
             daySection.classList.add("day-section", "empty");
+
+            daySection.addEventListener("click", () => {
+                const currentMonth = this.selectedDate.getMonth() + 1;
+                const step = month < currentMonth ? -1 : 1;
+
+                this.selectedDate.setMonth(this.selectedDate.getMonth() + step);
+                this.#displayMonth();
+            });
         }
 
         return daySection;
