@@ -7,8 +7,19 @@ class ElementEditor {
     }
 
     createOptionWindow(element, type) {
-        const window = document.createElement("div");
-        window.classList.add("task-option-window");
+        const optionWindow = document.createElement("div");
+        optionWindow.classList.add("task-option-window");
+
+        function handleKeydown(e) {
+            if (e.key === "Escape") {
+                close();
+            }
+        }
+
+        function close() {
+            optionWindow.remove();
+            document.removeEventListener("keydown", handleKeydown);
+        }
 
         const container = document.createElement("div");
         container.classList.add("task-option-content");
@@ -26,7 +37,7 @@ class ElementEditor {
         editButton.addEventListener("click", (e) => {
             e.stopPropagation();
 
-            const editField = this.#handleEdit(element, window, type);
+            const editField = this.#handleEdit(element, close, type);
             container.insertBefore(editField, editButton);
 
             editButton.style.display = "none";
@@ -49,26 +60,28 @@ class ElementEditor {
                         break;
                     }
                 }
-                window.remove();
+                close();
             });
             container.append(deleteButton);
         }
 
         exitButton.textContent = "Exit";
         exitButton.addEventListener("click", () => {
-            window.remove();
+            close();
         });
         container.append(exitButton);
 
-        window.append(container);
+        optionWindow.append(container);
 
-        window.addEventListener("click", (e) => {
-            if (e.target === window) {
-                window.remove();
+        document.addEventListener("keydown", handleKeydown);
+
+        optionWindow.addEventListener("click", (e) => {
+            if (e.target === optionWindow) {
+                close();
             }
         });
 
-        return window;
+        return optionWindow;
     }
 
     async #deleteElement(element, path, parentElement = null) {
@@ -92,7 +105,7 @@ class ElementEditor {
         const elementId = element.dataset.id;
         console.log(elementId);
 
-        if( await this.databaseHandler.editInDatabase(editedText, path, elementId)){
+        if (await this.databaseHandler.editInDatabase(editedText, path, elementId)) {
             element.textContent = editedText;
             return true;
         }
@@ -108,7 +121,7 @@ class ElementEditor {
         return editField;
     }
 
-    #handleEdit(element, optionWindow, type) {
+    #handleEdit(element, close, type) {
         const editField = this.#createEditField(element.textContent);
 
         editField.addEventListener("keydown", async (e) => {
@@ -123,26 +136,24 @@ class ElementEditor {
                 switch (type) {
                     case "task": {
                         if (await this.#edit(element, editedText, "tasks")) {
-                            optionWindow.remove();
+                            close();
                         }
                         break;
                     }
                     case "list-title": {
                         if (await this.#edit(element, editedText, "lists")) {
-                            optionWindow.remove();
+                            close();
                         }
                         break;
                     }
                     case "list-element": {
                         if (await this.#edit(element, editedText, "lists/elements")) {
-                            optionWindow.remove();
+                            close();
                         }
                         break;
                     }
                 }
 
-            } else if (e.key === "Escape") {
-                if (optionWindow) optionWindow.remove();
             }
         });
 
