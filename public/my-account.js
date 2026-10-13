@@ -23,14 +23,6 @@ var POPUP_WINDOW_VISIBLE = false;
 
 document.addEventListener("keydown", handleKeyDown);
 
-function logout() {
-    fetch('/logout', {
-        method: 'POST'
-    }).then(() => {
-        window.location.href = '/login.html';
-    })
-};
-
 function hidePopUpWindow() {
     backdrop.classList.add("hidden");
     popUpWindow.classList.add("hidden");

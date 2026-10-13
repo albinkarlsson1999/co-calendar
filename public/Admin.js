@@ -120,10 +120,4 @@ async function toggleAdmin(user) {
     }
 }
 
-function logout() {
-    fetch('/logout', { method: 'POST' }).then(() => {
-        window.location.href = '/login.html';
-    });
-}
-
 window.addEventListener('load', loadUsers);
