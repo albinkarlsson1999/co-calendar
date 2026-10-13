@@ -173,4 +173,26 @@ class DatabaseHandler {
             console.error("Failed to update List Element", e);
         }
     }
+
+    async sendShareRequest(type, email){
+        try {
+                const response = await fetch(`/api/${type}/share`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    return `Succeeded to share ${type}`;
+                } else {
+                    return `Failed to share ${type}:  ${data.error}`;
+                }
+            } catch (e) {
+                console.error("Failed to share:", e);
+            }
+    }
 }

@@ -14,9 +14,13 @@ function logout() {
 
 class UserNavigationHandler {
 
+    databaseHandler = null;
+
     myAccountButton = null;
 
     constructor() {
+
+        this.databaseHandler = new DatabaseHandler();
 
         this.myAccountButton = document.getElementById("account-button");
         this.myAccountButton.addEventListener("click", () => {
@@ -114,36 +118,14 @@ class UserNavigationHandler {
         const results = [];
 
         if (willShareTasks) {
-            results.push(await this.#sendShareRequest("tasks", email))
+            results.push(await this.databaseHandler.sendShareRequest("tasks", email))
         }
 
         if (willShareLists) {
-            results.push(await this.#sendShareRequest("lists", email));
+            results.push(await this.databaseHandler.sendShareRequest("lists", email));
         }
 
         return results;
-    }
-
-    async #sendShareRequest(type, email){
-        try {
-                const response = await fetch(`/api/${type}/share`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email })
-                });
-                
-                const data = await response.json();
-
-                if (response.ok) {
-                    return `Succeeded to share ${type}`;
-                } else {
-                    return `Failed to share ${type}:  ${data.error}`;
-                }
-            } catch (e) {
-                console.error("Failed to share:", e);
-            }
     }
 }
 
