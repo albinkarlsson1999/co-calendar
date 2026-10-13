@@ -438,4 +438,13 @@ body {
     .day-name {
         display: none;
     }
+
+    .add-item-button {
+        display: block;
+        margin: 0 auto;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--theme-dark);
+    }
 }
