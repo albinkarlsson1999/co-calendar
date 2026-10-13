@@ -3,6 +3,7 @@
     --theme-dark: rgb(106, 170, 253);
     --theme-light: rgba(106, 170, 253, 0.541);
     --hover-green: rgb(69, 235, 3);
+    --hover-blue: rgb(3, 169, 235);
     --hover-day: rgb(197, 255, 174);
     --hover-gray: rgb(197, 197, 197);
     --selected-day: rgb(134, 229, 134);
@@ -48,6 +49,7 @@ body {
 
     background-color: var(--theme-dark);
     border-radius: 20px;
+    border: 1px solid black;
 }
 
 .options-field {
@@ -153,12 +155,14 @@ body {
     min-width: 50px;
     min-height: 20px;
     border-radius: 10px;
+    box-shadow: 0 2px 2px black;
     border: transparent;
     background: var(--theme-dark);
 }
 
 .interractive-button:hover {
-    background-color: var(--hover-green);
+    box-shadow: 0 0 0;
+    background-color: var(--hover-blue);
     cursor: pointer;
 }
 
@@ -249,9 +253,14 @@ body {
 
 .list-box.empty {
     border: dashed 1px gray;
-    background-color: rgb(236, 236, 236);
+    background-color: #d4d4d4;
     justify-content: center;
     align-items: center;
+}
+
+.list-box.empty:hover {
+    cursor: pointer;
+    background-color: var(--hover-gray);
 }
 
 .list-box.highlight {
@@ -288,6 +297,7 @@ body {
 
 .delete-button {
     position: absolute;
+    box-shadow: 0 2px 2px black;
     right: 8px;
     transform: translateY(-50%);
     background-color: lightcoral;
@@ -295,6 +305,11 @@ body {
     color: white;
     cursor: pointer;
     border-radius: 5px;
+}
+
+.delete-button:hover {
+    background-color: red;
+    box-shadow: 0 0 0;
 }
 
 .list-title-container {
@@ -335,6 +350,7 @@ body {
 
 .create-new-list-button {
     background-color: rgb(187, 187, 187);
+    box-shadow: 0 2px 2px black;
     padding: 20px;
     border: hidden;
     border-radius: 30px;
@@ -342,17 +358,20 @@ body {
 
 .create-new-list-button:hover {
     background-color: var(--hover-green);
+    box-shadow: 0 0 0;
     cursor: pointer;
 }
 
 .add-element-button{
     border: hidden;
+    box-shadow: 0 2px 2px black;
     border-radius: 5px;
     background-color: rgb(187, 187, 187);
 }
 
 .add-element-button:hover {
     background-color: var(--hover-green);
+    box-shadow: 0 0 0;
     cursor: pointer;
 }
 
