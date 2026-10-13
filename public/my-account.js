@@ -81,9 +81,11 @@ function handleChangeNamePopUp() {
     const enterFirstName = document.createElement("input");
     enterFirstName.setAttribute("type", "text");
     enterFirstName.setAttribute("placeholder", "First Name");
+    enterFirstName.classList.add("input-field");
     const enterLastName = document.createElement("input");
     enterLastName.setAttribute("type", "text");
     enterLastName.setAttribute("placeholder", "Last Name");
+    enterLastName.classList.add("input-field");
 
     const cancelButton = standardCancelButton();
 
@@ -108,9 +110,11 @@ function handleChangePasswordPopUp() {
     const enterNewPassword = document.createElement("input");
     enterNewPassword.setAttribute("type", "password");
     enterNewPassword.setAttribute("placeholder", "New Password");
+    enterNewPassword.classList.add("input-field");
     const enterCurrentPassword = document.createElement("input");
     enterCurrentPassword.setAttribute("type", "password");
     enterCurrentPassword.setAttribute("placeholder", "Current Password");
+    enterCurrentPassword.classList.add("input-field");
 
     const cancelButton = standardCancelButton();
 

@@ -215,12 +215,6 @@ body {
     gap: 12px;
 }
 
-#share-email {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
 #submit-share {
     padding: 8px;
     background-color: var(--theme-dark);
@@ -387,3 +381,16 @@ body {
     text-decoration: line-through;
 }
 
+.input-field {
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+}
+
+.input-field:focus {
+    border-color: hsl(211, 100%, 50%);
+    outline: none;
+}
