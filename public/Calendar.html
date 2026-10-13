@@ -11,6 +11,7 @@
     <script src="Calendar.js" defer></script>
     <script src="UserNavigationHandler.js" defer></script>
     <script src="List.js" defer></script>
+    <script src="Dialog.js" defer></script>
     <meta charset="UTF-8">
 </head>
 
@@ -49,7 +50,7 @@
 
 
             <div id="confirmation-window" class="share-window">
-                <div id="confirmation-content", class="share-content">
+                <div id="confirmation-content" , class="share-content">
                 </div>
             </div>
 
@@ -73,12 +74,26 @@
 
 
         <div id="edit-list-window">
-            </div>
+        </div>
     </section>
 
     <footer>
 
     </footer>
+    <div id="confirmation-dialog" class="dialog-backdrop">
+        <div class="dialog-box">
+            <p id="confirmation-message"></p>
+            <button id="confirm-button">Yes</button>
+            <button id="confirmation-dialog-cancel">Cancel</button>
+        </div>
+    </div>
+
+    <div id="error-dialog" class="dialog-backdrop">
+        <div class="dialog-box">
+            <p id="error-dialog-message"></p>
+            <button id="error-dialog-close">OK</button>
+        </div>
+    </div>
 </body>
 
 </html>

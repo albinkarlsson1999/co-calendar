@@ -36,8 +36,8 @@ async function loadUsers() {
 
 window.addEventListener('load', loadUsers);
 
-function deleteUser(userId) {
-    if (confirm('Are you sure you want to delete this user?')) {
+async function deleteUser(userId) {
+    if (await showConfirmationDialog(`Are you sure you want to delete user with ID ${userId}?`)) {
         fetch(`/admin/users/${userId}`, {
             method: 'DELETE'
             // Cookies skickas automatiskt!

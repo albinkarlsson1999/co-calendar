@@ -6,7 +6,7 @@ function showConfirmationDialog(message) {
     const cancelButton = document.getElementById('confirmation-dialog-cancel');
 
     confirmationMessage.textContent = message;
-    confirmationDialog.style.display = 'block';
+    confirmationDialog.style.display = 'flex';
     cancelButton.focus();
 
     return new Promise((resolve) => {
@@ -36,7 +36,7 @@ function showErrorDialog(message) {
     const closeButton = document.getElementById('error-dialog-close');
 
     errorMessage.textContent = message;
-    errorDialog.style.display = 'block';
+    errorDialog.style.display = 'flex';
 
 
     return new Promise((resolve) => {

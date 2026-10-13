@@ -74,7 +74,7 @@ function setUpOwnerList(listBox, titleElement, titleDiv) {
     deleteButton.textContent = "X";
     deleteButton.classList.add("delete-button");
     deleteButton.addEventListener("click", async () => {
-        const confirmed = confirm(`Are you sure you want to delete the list "${list.title}"?`);
+        const confirmed = await showConfirmationDialog(`Are you sure you want to delete the list "${titleElement.textContent}"? This action cannot be undone.`);
         if (confirmed) {
             const success = await databaseHandler.deleteFromDatabase("lists", listBox.dataset.id);
             if (success) {
