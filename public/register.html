@@ -33,6 +33,16 @@
     </div>
 
     <script>
+        function showError(message) {
+            document.getElementById("error-message")?.remove();
+            const errorParagraph = document.createElement("p");
+            errorParagraph.id = "error-message";
+            errorParagraph.textContent = message;
+            errorParagraph.style.color = "red";
+            errorParagraph.role = "alert";
+            document.querySelector(".center-box").appendChild(errorParagraph);
+        }
+
         document.getElementById("register-form").addEventListener("submit", async (e) => {
             e.preventDefault();
 
@@ -63,14 +73,11 @@
                 } else {
                     const errorData = await response.json();
                     const errorParagraph = document.createElement("p");
-                    errorParagraph.textContent = errorData.error || "Registration failed. Please try again.";
-                    document.getElementById("error-message").appendChild(errorParagraph);
+                    showError(errorData.error || "An error occurred. Please try again later.");
                 }
             } catch (error) {
                 console.error("error logging in:", error);
-                const errorParagraph = document.createElement("p");
-                errorParagraph.textContent = "An error occurred. Please try again.";
-                document.getElementById("error-message").appendChild(errorParagraph);
+                showError("An error occurred. Please try again later.");
             }
         });
     </script>
