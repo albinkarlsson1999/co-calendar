@@ -74,7 +74,13 @@ class ElementEditor {
     async #deleteElement(element, path, parentElement = null) {
         const elementId = element.dataset.id;
 
-        await this.databaseHandler.deleteFromDatabase(path, elementId);
+        const success = Boolean(await this.databaseHandler.deleteFromDatabase(path, elementId));
+
+        if (!success) {
+            console.error("Failed to delete element from database.");
+            await showErrorDialog("Failed to delete element. Please try again later.");
+            return;
+        }
 
         element.remove();
         if (parentElement) {
