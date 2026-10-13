@@ -70,7 +70,7 @@ class UserNavigationHandler {
         const sendLists = document.getElementById("share-lists-checkbox").checked;
 
         if (email) {
-            this.#showMessage(await this.#shareElements(email, sendTasks, sendLists));
+            this.#showMessage(await this.#sendShareRequest(email, sendTasks, sendLists));
             shareWindow.style.display = "none";
         }
         document.getElementById("share-email").value = "";
@@ -114,7 +114,7 @@ class UserNavigationHandler {
         confirmationWindow.style.display = "flex";
     }
 
-    async #shareElements(email, willShareTasks, willShareLists) {
+    async #sendShareRequest(email, willShareTasks, willShareLists) {
         const results = [];
 
         if (willShareTasks) {
