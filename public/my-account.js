@@ -430,6 +430,7 @@ async function getAcceptedShares(type) {
             const data = await response.json();
             return data;
         }
+        return [];
     } catch (e) {
         console.error(`Error loading accepted ${type} shares`, e);
         return [];
@@ -449,6 +450,7 @@ async function getMySharedShares(type) {
             const data = await response.json();
             return data;
         }
+        return [];
     } catch (e) {
         console.error(`Error loading your shared ${type} items`, e);
         return [];
