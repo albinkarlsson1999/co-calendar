@@ -71,8 +71,9 @@ class Calendar {
             if (i < startDay) {
                 const previousMonth = new Date(year, month - 1, -1); // last day of previous month
                 const offset = previousMonth.getDate() - (startDay - i) + 2;
+                const monthNumber = (month === 1 ? 12 : month - 1)
 
-                tempDay = this.#createDayNode(dayName, offset, month - 1, true);
+                tempDay = this.#createDayNode(dayName, offset, monthNumber, true);
             } else {
                 const dayNumber = i - startDay + 1;
 
