@@ -185,6 +185,14 @@ app.put('/admin/users/:userId', async (req, res) => {
         return res.status(401).json({ error: "Unauthorized. Please log in." });
     }
 
+    if (typeof is_admin !== 'boolean') {
+        return res.status(400).json({ error: "Invalid input. is_admin must be a boolean." });
+    }
+
+    if (Number(userId) === Number(loggedInUserId)) {
+        return res.status(400).json({ error: "Admins cannot change their own admin status" });
+    }
+
     try {
         const adminCheck = await pool.query(
             "SELECT is_admin FROM User WHERE uID = ?",
