@@ -158,6 +158,11 @@ class Calendar {
 
         const savedTask = await this.databaseHandler.saveCalendarTask(year, month, taskDate, title);
 
+        if (!savedTask) {
+            console.error("Failed to save task");
+            await showErrorDialog("Failed to save task. Please try again later.");
+            return;
+        }
         const finishedTask = this.#createTaskElement(savedTask.title, savedTask.id, true);
         this.selectedDay.insertBefore(finishedTask, parentElement);
         

@@ -38,6 +38,7 @@ function showErrorDialog(message) {
     errorMessage.textContent = message;
     errorDialog.style.display = 'flex';
 
+    closeButton.focus();
 
     return new Promise((resolve) => {
         function handleKeydown(event) {
