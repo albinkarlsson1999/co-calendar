@@ -97,7 +97,7 @@ class Calendar {
             for (let i = 0; i < missingDays; i++) {
 
                 const dayName = Calendar.weekNames[7 - missingDays + i];
-                const monthNumber = (month === 12 ? 1 : month +1);
+                const monthNumber = (month === 12 ? 1 : month + 1);
                 const tempDay = this.#createDayNode(dayName, i + 1, monthNumber, true);
                 currentWeekDiv.append(tempDay);
             }
@@ -117,7 +117,14 @@ class Calendar {
 
 
         const dayHeader = document.createElement("p");
-        dayHeader.textContent = `${dayName} ${dayNumber}/${month}`;
+        const nameSpan = document.createElement("span");
+        nameSpan.classList.add("day-name");
+        nameSpan.textContent = `${dayName} `;
+
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = `${dayNumber}/${month}`;
+
+        dayHeader.append(nameSpan, dateSpan);
         daySection.append(dayHeader);
 
         if (!isEmpty) {
@@ -152,13 +159,13 @@ class Calendar {
 
         for (const task of tasks) {
 
-                const daySection = document.getElementById(task.task_date);
-                if (daySection) {
-                    const tempTask = this.#createTaskElement(task.title, task.id, task.is_owner, task.name);
+            const daySection = document.getElementById(task.task_date);
+            if (daySection) {
+                const tempTask = this.#createTaskElement(task.title, task.id, task.is_owner, task.name);
 
-                    daySection.append(tempTask);
-                }
+                daySection.append(tempTask);
             }
+        }
     }
 
     async #saveTask(title, parentElement) {
@@ -175,7 +182,7 @@ class Calendar {
         }
         const finishedTask = this.#createTaskElement(savedTask.title, savedTask.id, true);
         this.selectedDay.insertBefore(finishedTask, parentElement);
-        
+
     }
 
     #changeFocusedDay(dayElement) {
