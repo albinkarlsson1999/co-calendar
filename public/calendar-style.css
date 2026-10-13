@@ -4,6 +4,7 @@
     --theme-light: rgba(106, 170, 253, 0.541);
     --hover-green: rgb(69, 235, 3);
     --hover-day: rgb(197, 255, 174);
+    --hover-gray: rgb(197, 197, 197);
     --selected-day: rgb(134, 229, 134);
     --border-gray: #d4d4d4;/
 }
@@ -99,6 +100,11 @@ body {
 
 .day-header.empty {
     background-color: #b6b6b6;
+}
+
+.day-section.empty:hover {
+    cursor: pointer;
+    background-color: var(--hover-gray);
 }
 
 .day-task {
