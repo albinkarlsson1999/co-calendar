@@ -80,7 +80,7 @@ function setUpOwnerList(listBox, titleElement, titleDiv) {
             if (success) {
                 listBox.remove();
             } else {
-                alert("Failed to delete the list. Please try again.");
+                await showErrorDialog("Failed to delete the list. Please try again later.");
             }
         }
     });
