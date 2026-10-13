@@ -46,6 +46,8 @@ body {
     text-align: center;
     padding-left: 20px;
     padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 
     background-color: var(--theme-dark);
     border-radius: 20px;
