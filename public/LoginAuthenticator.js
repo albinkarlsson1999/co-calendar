@@ -11,4 +11,12 @@ async function checkLoggedIn() {
     }
 }
 
+function logout() {
+    fetch('/logout', {
+        method: 'POST'
+    }).then(() => {
+        window.location.href = '/login.html';
+    })
+}
+
 checkLoggedIn();
