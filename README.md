@@ -4,7 +4,7 @@ A shared calendar and list app where users can plan tasks, keep lists and share 
 
 ## Background
 
-CO-Calendar started as a group project in [course name] at Jönköping University, built together with
+CO-Calendar started as a group project in Web Development at Jönköping University, built together with
 [Alexander Saila](https://github.com/alexanderSaila). This repository continues the development,
 including a planned migration of the frontend to React.
 
