@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS project_calendar;
+DROP DATABASE IF EXISTS cocalendar;
 
-CREATE DATABASE IF NOT EXISTS project_calendar;
-USE project_calendar;
+CREATE DATABASE IF NOT EXISTS cocalendar;
+USE cocalendar;
 
 CREATE TABLE IF NOT EXISTS User (
     uID INT AUTO_INCREMENT PRIMARY KEY,
