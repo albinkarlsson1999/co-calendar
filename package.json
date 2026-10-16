@@ -1,25 +1,25 @@
 {
-  "name": "project",
+  "name": "co-calendar",
   "version": "1.0.0",
   "description": "",
-  "main": "Calendar.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "node --watch server.js",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexanderSaila/Web-Development-Project.git"
+    "url": "git+https://github.com/albinkarlsson1999/co-calendar"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Albin Karlsson",
+  "license": "MIT",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/alexanderSaila/Web-Development-Project/issues"
+    "url": "https://github.com/albinkarlsson1999/co-calendar/issues"
   },
-  "homepage": "https://github.com/alexanderSaila/Web-Development-Project#readme",
+  "homepage": "https://github.com/albinkarlsson1999/co-calendar#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -29,7 +29,7 @@
     "express-rate-limit": "^8.7.0",
     "mariadb": "^3.5.4"
   },
-  "devDependencies": {
-    "nodemon": "^1.14.10"
+  "allowScripts": {
+    "bcrypt@6.0.0": true
   }
 }
